@@ -56,7 +56,7 @@ class StringChord(Chord):
         res += '┯━'.join('' for _ in range(len(self.tuning) - 1))
         res += '┑\n'
 
-        for i in range(1, up - base + 1):
+        for i in range(0 if base != 0 else 1, up - base + 1):
             current = [j for j, v in enumerate(self.positions) if v == i + base]
             dots = ['●' if j in current else '│' for j in range(len(self.tuning))]
             res += ' '.join(dots) + '\n'
@@ -89,22 +89,30 @@ def generate_positions(chord: Chord, tuning: Chord = Tunings.guitar_tuning, limi
         if x >= len(r_chord.notes):
 
             if {v.name for v in r_chord.notes} == names:
-                return [copy.deepcopy(r_pos)]
+                return {bytes(r_pos)}
             else:
                 # @todo add mutes !
-                return []
+                return {}
 
-        res = []
+        res = set()
 
         while r_pos[x] <= r_limit:
-            res += recur(r_chord, r_pos, r_limit, x + 1)
+            rec_data = recur(r_chord, r_pos, r_limit, x + 1)
+            res = res.union(rec_data)
 
             r_chord.notes[x].move(1)
             r_pos[x] += 1
+
+            while r_chord.notes[x].name not in names and r_pos[x] <= r_limit:
+                r_chord.notes[x].move(1)
+                r_pos[x] += 1
 
         r_chord.notes[x].move(-r_pos[x])
         r_pos[x] = 0
 
         return res
 
-    return recur(tuning, [0 for _ in range(len(tuning.notes))], 4, 0)
+    r = recur(tuning, [0 for _ in range(len(tuning.notes))], 4, 0)
+
+    # @todo add high versions
+    return [list(v) for v in r]
