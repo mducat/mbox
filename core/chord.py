@@ -57,6 +57,11 @@ class Chord:
 
         return cls(*notes)
 
+    @classmethod
+    def from_name(cls, name: str):
+        # @TODO
+        return cls(Note('C'))
+
     @property
     def name(self):
         return ', '.join([v.name for v in self.notes])

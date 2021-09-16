@@ -7,7 +7,7 @@ if __name__ == '__main__':
     print(scale)
     print(scale.analyse())
 
-    chord_prog = [
+    chord_prog = [  # II - V - I
         Chord.triad(1, scale),
         Chord.triad(4, scale),
         Chord.triad(0, scale),
@@ -26,4 +26,17 @@ if __name__ == '__main__':
     st = StringChord(positions, standard_tuning)
     st.show()
 
-    # generate_positions(Chord())
+    l = generate_positions(st)
+    print(len(l))
+
+    for v in l[:5]:
+        StringChord(v).show()
+
+    print('ALL SOLUTIONS:')
+    for ch in chord_prog:
+        for solution in generate_positions(ch):
+            StringChord(solution).show()
+
+    print('RESUME')
+    for ch in chord_prog:
+        StringChord(generate_positions(ch)[0]).show()

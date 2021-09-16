@@ -1,10 +1,11 @@
+import copy
 
 from core import Chord, Note, Tunings
 
 
 class StringChord(Chord):
 
-    def __init__(self, positions: [int], tuning: [Note]):
+    def __init__(self, positions: [int], tuning: Chord = Tunings.guitar_tuning):
         if len(positions) != len(tuning):
             raise ValueError('Positions size differing from tuning size!')
 
@@ -34,7 +35,9 @@ class StringChord(Chord):
 
         return hash(notes_hash + position_hash + tuning_hash)
 
-    def show(self):
+    def to_tab(self):
+        res = str()
+
         to_print = []
         for v in self.positions:
             if v < 0:
@@ -47,31 +50,61 @@ class StringChord(Chord):
         base = min(v for v in self.positions if v >= 0)
         up = max(self.positions)
 
-        print()
-        print(self.name)
-        print(' '.join(to_print))
+        res += ' '.join(to_print) + '\n'
 
-        print('┍━', end='')
-        print('┯━'.join('' for _ in range(len(self.tuning) - 1)), end='')
-        print('┑')
+        res += '┍━'
+        res += '┯━'.join('' for _ in range(len(self.tuning) - 1))
+        res += '┑\n'
 
         for i in range(1, up - base + 1):
             current = [j for j, v in enumerate(self.positions) if v == i + base]
             dots = ['●' if j in current else '│' for j in range(len(self.tuning))]
-            print(' '.join(dots))
-            print('├', end='')
-            print('─┼'.join('' for _ in range(len(self.tuning) - 1)), end='')
-            print('─┤')
+            res += ' '.join(dots) + '\n'
+            res += '├'
+            res += '─┼'.join('' for _ in range(len(self.tuning) - 1))
+            res += '─┤\n'
 
-        print(' '.join('│' for j in range(len(self.tuning))))
-        print('└─', end='')
-        print('┴─'.join('' for _ in range(len(self.tuning) - 1)), end='')
-        print('┘')
+        res += ' '.join('│' for j in range(len(self.tuning))) + '\n'
+        res += '└─'
+        res += '┴─'.join('' for _ in range(len(self.tuning) - 1))
+        res += '┘\n'
+
+        return res
+
+    def show(self):
+        print()
+        print(self.name)
+        print(self.to_tab())
 
 
-def generate_positions(chord: Chord, tuning: Chord = None):
-    if tuning is None:
-        tuning = Tunings.guitar_tuning
+def generate_positions(chord: Chord, tuning: Chord = Tunings.guitar_tuning, limit: int = 15, max_dist: int = 4):
 
     if len(chord.notes) > len(tuning.notes):
         raise ValueError(f'Unable to play a {len(chord.notes)} notes chord on a {len(tuning.notes)} notes tuning !')
+
+    names = {v.name for v in chord.notes}
+
+    def recur(r_chord, r_pos, r_limit, x):
+
+        if x >= len(r_chord.notes):
+
+            if {v.name for v in r_chord.notes} == names:
+                return [copy.deepcopy(r_pos)]
+            else:
+                # @todo add mutes !
+                return []
+
+        res = []
+
+        while r_pos[x] <= r_limit:
+            res += recur(r_chord, r_pos, r_limit, x + 1)
+
+            r_chord.notes[x].move(1)
+            r_pos[x] += 1
+
+        r_chord.notes[x].move(-r_pos[x])
+        r_pos[x] = 0
+
+        return res
+
+    return recur(tuning, [0 for _ in range(len(tuning.notes))], 4, 0)
