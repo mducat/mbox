@@ -19,27 +19,11 @@ if __name__ == '__main__':
     with open('test.mid', 'wb') as f:
         out.writeFile(f)
 
-    standard_tuning = Chord(
-            Note('E2'),
-            Note('A2'),
-            Note('D3'),
-            Note('G3'),
-            Note('B3'),
-            Note('E4'),
-        )
+    standard_tuning = Tunings.guitar_tuning
 
-    intended_chord = [
-        Note('F'),
-        Note('C'),
-        Note('A'),
-    ]
+    positions = [-1, -1, 3, 2, 1, 0]
 
-    print(len(standard_tuning.notes))
-    print(standard_tuning.notes[0].octave)
-
-    positions = [-1, -1, 3, 2, 1, 1]
-
-    st = StringChord(intended_chord, positions, standard_tuning)
+    st = StringChord(positions, standard_tuning)
     st.show()
 
     # generate_positions(Chord())

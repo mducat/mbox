@@ -57,10 +57,12 @@ class Chord:
 
         return cls(*notes)
 
-    def __str__(self):
-        chord_name = ', '.join([v.name for v in self.notes])
+    @property
+    def name(self):
+        return ', '.join([v.name for v in self.notes])
 
-        return 'Chord ' + chord_name
+    def __str__(self):
+        return 'Chord ' + self.name
 
     def __repr__(self):
         return f'<{self.__str__()}>'
