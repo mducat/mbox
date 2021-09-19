@@ -64,7 +64,7 @@ class StringChord(Chord):
             res += '─┼'.join('' for _ in range(len(self.tuning) - 1))
             res += '─┤\n'
 
-        res += ' '.join('│' for j in range(len(self.tuning))) + '\n'
+        res += ' '.join('│' for _ in range(len(self.tuning))) + '\n'
         res += '└─'
         res += '┴─'.join('' for _ in range(len(self.tuning) - 1))
         res += '┘\n'

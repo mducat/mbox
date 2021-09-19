@@ -1,8 +1,8 @@
 
 from core import *
+from ui import *
 
 # TODO
-# - UI ?
 # - gen guitar + piano map
 # - know scales for a chord
 # - gen chord progressions

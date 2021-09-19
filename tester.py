@@ -3,13 +3,13 @@ from mbox import *
 
 
 if __name__ == '__main__':
-    scale = Scale.major('F')
+    scale = Scale.minor('C#')
     print(scale)
     print(scale.analyse())
 
     chord_prog = [  # II - V - I
         Chord.triad(1, scale),
-        Chord.triad(4, scale),
+        Chord.triad(3, scale),
         Chord.triad(0, scale),
     ]
     print(chord_prog)

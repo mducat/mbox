@@ -16,11 +16,17 @@ class Chord:
 
         self.notes.sort(key=lambda x: x.position)
 
+        self.names_found = []
+        self.name = None
+
     def __len__(self):
         return len(self.notes)
 
     def __getitem__(self, item):
         return self.notes[item]
+
+    def transpose(self, amount):
+        self.notes = [v.move(amount) for v in self.notes]
 
     def get_intervals(self):
         inter = []
@@ -61,10 +67,6 @@ class Chord:
     def from_name(cls, name: str):
         # @TODO
         return cls(Note('C'))
-
-    @property
-    def name(self):
-        return ', '.join([v.name for v in self.notes])
 
     def __str__(self):
         return 'Chord ' + self.name
