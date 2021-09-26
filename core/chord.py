@@ -15,9 +15,7 @@ class Chord:
             raise ValueError(f'Invalid object in chord.')
 
         self.notes.sort(key=lambda x: x.position)
-
-        self.names_found = []
-        self.name = None
+        self.name = ' '.join([v.name for v in self.notes])
 
     def __len__(self):
         return len(self.notes)

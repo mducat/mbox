@@ -1,6 +1,7 @@
 from PyQt5 import Qt
 from PyQt5.QtWidgets import QApplication, QAction, qApp, QStyle, QTabWidget, QWidget, QGridLayout, QMenuBar, QDialog
 
+from ui.widgets import ChordTab, StringTab
 from ui.widgets.dialogs import CreditsModal
 
 
@@ -39,11 +40,13 @@ class MboxWindow(QWidget):
         layout.addWidget(main_bar)
 
         self.tabs = QTabWidget()
-        self.tab1 = QWidget()
+        self.tab1 = ChordTab()
         self.tab2 = QWidget()
+        self.tab3 = StringTab()
 
         self.tabs.addTab(self.tab1, "Composer")
-        self.tabs.addTab(self.tab2, "String chord finder")
+        self.tabs.addTab(self.tab2, "Tonal mapping")
+        self.tabs.addTab(self.tab3, "String chord finder")
 
         layout.addWidget(self.tabs)
 

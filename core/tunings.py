@@ -26,3 +26,19 @@ class Tunings:
         Note('B3'),
         Note('E4'),
     )
+
+    # @todo check notes order
+
+    ukulele_tuning = Chord(
+        Note('G4'),
+        Note('C4'),
+        Note('E4'),
+        Note('A4'),
+    )
+
+    bass_tuning = Chord(
+        Note('G2'),
+        Note('D2'),
+        Note('A1'),
+        Note('E1'),
+    )

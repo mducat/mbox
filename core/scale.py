@@ -37,6 +37,9 @@ class Scale:
     def __eq__(self, other):
         return self.scale == other.scale
 
+    def __contains__(self, item):
+        return item.name in {v.name for v in self.scale}
+
     @classmethod
     def for_steps(cls, base: Note, steps: list):
         notes = []

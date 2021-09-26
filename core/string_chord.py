@@ -1,6 +1,5 @@
-import copy
 
-from core import Chord, Note, Tunings
+from core import Chord, Tunings
 
 
 class StringChord(Chord):
@@ -77,6 +76,7 @@ class StringChord(Chord):
         print(self.to_tab())
 
 
+# @todo rename: inversions generator
 def generate_positions(chord: Chord, tuning: Chord = Tunings.guitar_tuning, limit: int = 15, max_dist: int = 4):
 
     if len(chord.notes) > len(tuning.notes):
