@@ -61,24 +61,26 @@ class StringTab(QWidget):
         align = Qt.AlignCenter
 
         for i in range(len(self.tuning) - 1):
-            qp.drawLine(grid_offset_x, grid_offset_y + i * step_y,
-                        2 * grid_offset_x + grid_width, grid_offset_y + i * step_y)
+            a = QPointF(grid_offset_x, grid_offset_y + i * step_y)
+            b = QPointF(2 * grid_offset_x + grid_width, grid_offset_y + i * step_y)
+
+            qp.drawLine(a, b)
 
         for i in range(self.tabs_len):
             line_pos = [grid_offset_x + i * step_x, grid_offset_y,
                         grid_offset_x + i * step_x, 2 * grid_offset_y + grid_height]
             box = QRectF(line_pos[0], line_pos[3], step_x, step_y * 1.5)
 
-            qp.drawLine(*line_pos)
+            qp.drawLine(QPointF(line_pos[0], line_pos[1]), QPointF(line_pos[2], line_pos[3]))
             qp.drawText(box, align, str(i + 1))
 
-        """positions = [-1, -1, 3, 2, 1, 0]
+        positions = [-1, -1, 3, 2, 1, 0]
 
         st = StringChord(positions)
-        self.paintChord(st, qp)"""
+        self.paintChord(st, qp)
 
-        test = Scale.minor('Fb')
-        self.paintScale(test, qp)
+        """test = Scale.minor('Fb')
+        self.paintScale(test, qp)"""
 
         qp.end()
 
