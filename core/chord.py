@@ -14,8 +14,12 @@ class Chord:
         if any(v for v in notes if not isinstance(v, Note)):
             raise ValueError(f'Invalid object in chord.')
 
+        self.name = None
+
         self.notes.sort(key=lambda x: x.position)
-        self.name = ' '.join([v.name for v in self.notes])
+        self.root_note = self.notes[0]
+
+        self.find_name()
 
     def __len__(self):
         return len(self.notes)
@@ -23,13 +27,65 @@ class Chord:
     def __getitem__(self, item):
         return self.notes[item]
 
+    def find_name(self):
+        print(self.notes)
+        inter = self.get_intervals()
+        names = ['P1', 'm2', 'M2', 'm3', 'M3', 'P4', 'd5', 'P5', 'm6', 'M6', 'm7', 'M7']
+
+        res = {names[abs(v) % len(names)] for v in inter}
+        print(res)
+
+        self.name = self.root_note.name
+
+        patterns = [
+            [{'M3', 'M7', 'M2', 'M6'}, 'maj13'],
+            [{'m3', 'm7', 'M6'}, 'm13'],
+            [{'M3', 'm7', 'M6'}, '13'],
+            [{'m3', 'm7', 'P4'}, 'm11'],
+            [{'M3', 'm7', 'P4'}, '11'],
+            [{'M3', 'M7', 'M2'}, 'maj9'],
+            [{'m3', 'm7', 'M2'}, 'm9'],
+            [{'m3', 'd5', 'M6'}, 'dim7'],
+            [{'m3', 'm7', 'M3'}, '7#9'],
+            [{'m7', 'M2'}, '9 '],
+            [{'m3', 'm7'}, 'm7'],
+            [{'m3', 'm6'}, 'm6'],
+            [{'M3', 'm7'}, '7 '],
+            [{'M3', 'M7'}, 'maj7'],
+            [{'m3', 'd5'}, 'dim'],
+            [{'m3'}, 'm'],
+            [{'M3'}, ''],
+            [{'P5'}, ''],
+            [{'M6'}, '6'],
+            [{'d5'}, 'b5'],
+            [{'m6'}, 'aug'],
+            [{'M2'}, 'add9'],
+            [{'P4'}, 'sus4'],
+            [{'M2'}, 'sus2'],
+            [{'m2'}, 'b9'],
+        ]
+
+        for pat in patterns:
+            if not pat[0].issubset(res):
+                continue
+
+            for v in pat[0]:
+                res.remove(v)
+
+            self.name += pat[1]
+
+        if 'P1' in res:
+            res.remove('P1')
+
+        self.name += ' '.join(res)
+
     def transpose(self, amount):
         self.notes = [v.move(amount) for v in self.notes]
 
     def get_intervals(self):
         inter = []
         for i in self.notes[1:]:
-            inter.append(interval(self.notes[0], i))
+            inter.append(interval(self.root_note, i))
         return inter
 
     def analyse(self):

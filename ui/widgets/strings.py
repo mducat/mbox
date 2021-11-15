@@ -49,7 +49,7 @@ class StringTab(QWidget):
         grid_width = self.grid_width
 
         font = qp.font()
-        font.setPointSizeF(font.pointSize() * (self.grid_width / 700))
+        font.setPointSizeF(font.pointSize() * (self.grid_width / 500))
         qp.setFont(font)
 
         main_grid = QRectF(grid_offset_x, grid_offset_y,
@@ -74,7 +74,7 @@ class StringTab(QWidget):
             qp.drawLine(QPointF(line_pos[0], line_pos[1]), QPointF(line_pos[2], line_pos[3]))
             qp.drawText(box, align, str(i + 1))
 
-        positions = [-1, -1, 3, 2, 1, 0]
+        positions = [-1, 3, 2, 3, 4, -1]
 
         st = StringChord(positions)
         self.paintChord(st, qp)
@@ -112,9 +112,11 @@ class StringTab(QWidget):
         font.setPointSizeF(font.pointSize() * (self.grid_width / 500))
         qp.setFont(font)
 
-        box_pos = [grid_offset_x, grid_offset_y - step_y,
+        box_pos = [grid_offset_x, grid_offset_y - step_y - 10,
                    grid_offset_x + grid_width, grid_offset_y]
         box = QRectF(*box_pos)
+
+        # TODO DRAW INTER
 
         qp.drawText(box, Qt.AlignCenter, chord.name)
 
@@ -135,7 +137,7 @@ class StringTab(QWidget):
 
         size = step_x / 2
 
-        center = QPointF(grid_offset_x + (x - 0.5) * step_x, grid_offset_y + y * step_y)
+        center = QPointF(grid_offset_x + (x - 0.5) * step_x, grid_offset_y + (len(self.tuning) - 1 - y) * step_y)
 
         box = QRectF(0, 0, size, size)
         box.moveCenter(center)
