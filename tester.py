@@ -1,3 +1,4 @@
+from mido import MidiFile
 
 from mbox import *
 
@@ -16,10 +17,12 @@ if __name__ == '__main__':
 
     out = create_midi(chord_prog)
 
-    with open('test.mid', 'wb') as f:
-        out.writeFile(f)
+    out.save('test.mid')
 
-    standard_tuning = Tunings.guitar_tuning
+    file = MidiFile('test.mid', clip=True)
+    file.print_tracks()
+
+    """standard_tuning = Tunings.guitar_tuning
 
     positions = [-1, -1, 3, 2, 1, 0]
 
@@ -39,4 +42,4 @@ if __name__ == '__main__':
 
     print('RESUME')
     for ch in chord_prog:
-        StringChord(generate_positions(ch)[0]).show()
+        StringChord(generate_positions(ch)[0]).show()"""

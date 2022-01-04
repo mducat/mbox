@@ -1,4 +1,4 @@
-from midiutil import MIDIFile
+from mido import MidiFile, Message
 
 from core import Note, interval
 
@@ -138,12 +138,15 @@ class Chord:
 
 
 def create_midi(chords: [Chord]):
-    file = MIDIFile(1)
+    file = MidiFile()
 
-    file.addTrackName(0, 1, 'Main track')
+    # TODO: change midiutil->mido
+
+    t = file.add_track('Main Track!')
 
     for i, chord in enumerate(chords):
         for note in chord.notes:
-            file.addNote(0, 0, note.midi, i, 1, 100)
+            t.append(Message('note_on', note=note.midi, time=i, velocity=100))
+            t.append(Message('note_off', note=note.midi, time=i+1, velocity=100))
 
     return file
