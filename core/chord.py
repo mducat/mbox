@@ -5,16 +5,21 @@ from core import Note, interval
 
 class Chord:
 
-    def __init__(self, *notes: [Note]):
-        self.notes = list(set(notes))
+    def __init__(self, *notes):
+        if len(notes) == 1 and isinstance(notes[0], list):
+            notes = notes[0]
 
         if not notes:
             raise ValueError('Cannot create empty chord.')
 
-        if any(v for v in notes if not isinstance(v, Note)):
+        if any(v for v in notes if not isinstance(v, (Note, str))):
             raise ValueError(f'Invalid object in chord.')
 
         self.name = None
+
+        notes = [v if isinstance(v, Note) else Note(v) for v in notes]
+
+        self.notes = list(set(notes))
 
         self.notes.sort(key=lambda x: x.position)
         self.root_note = self.notes[0]

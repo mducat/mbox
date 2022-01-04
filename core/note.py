@@ -59,6 +59,12 @@ class Note:
     def position(self):
         return self.all_names.index(self.name) + self.octave * 12
 
+    def interval(self, other):
+        return interval(self, other) % 12
+
+    def distance(self, other):
+        return interval(self, other)
+
     def move(self, n):
         i = self.all_names.index(self.name)
         i += n

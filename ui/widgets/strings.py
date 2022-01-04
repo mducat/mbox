@@ -6,16 +6,6 @@ from PyQt5.QtWidgets import QWidget, QGridLayout
 from core import Chord, Tunings, StringChord, Scale
 
 
-class StringCanvas(QPainter):
-
-    def __init__(self, parent=None):
-        QPainter.__init__(self)
-
-        self.begin(parent)
-        self.drawLine(5, 5, 100, 100)
-        self.end()
-
-
 class StringTab(QWidget):
 
     def __init__(self, tuning: Chord = Tunings.guitar_tuning, tabs_len=15):
@@ -138,6 +128,11 @@ class StringTab(QWidget):
         size = step_x / 2
 
         center = QPointF(grid_offset_x + (x - 0.5) * step_x, grid_offset_y + (len(self.tuning) - 1 - y) * step_y)
+
+        pen = QPen()
+        pen.setColor(QColor(0x33, 0x33, 0x33))
+        pen.setWidth(2)
+        qp.setPen(pen)
 
         box = QRectF(0, 0, size, size)
         box.moveCenter(center)

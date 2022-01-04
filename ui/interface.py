@@ -1,11 +1,9 @@
-from PyQt5 import Qt
-from PyQt5.QtWidgets import QApplication, QAction, qApp, QStyle, QTabWidget, QWidget, QGridLayout, QMenuBar, QDialog
+from PyQt5.QtWidgets import QApplication, QAction, qApp, QStyle, QTabWidget, QWidget, QMainWindow
 
-from ui.widgets import ChordTab, StringTab
-from ui.widgets.dialogs import CreditsModal
+from ui.widgets import ChordTab, StringTab, Composer
 
 
-class MboxWindow(QWidget):
+class MboxWindow(QMainWindow):
 
     def __init__(self):
         QWidget.__init__(self)
@@ -13,47 +11,27 @@ class MboxWindow(QWidget):
         self.setWindowTitle('MBox')
         self.setFixedSize(1200, 800)
 
-        layout = QGridLayout()
-        self.setLayout(layout)
+        self.status = self.statusBar()
+        self.status.showMessage("Ready", 3000)
 
         exit_act = QAction(self.style().standardIcon(QStyle.SP_DialogCancelButton), '&Exit', self)
         exit_act.setShortcut('Ctrl+Q')
         exit_act.setStatusTip('Exit application')
         exit_act.triggered.connect(qApp.quit)
 
-        credits_act = QAction('&About', self)
-        credits_act.setStatusTip('About MBox')
-        credits_act.triggered.connect(self.credit_popup)
-
-        main_bar = QMenuBar()
-
-        file_menu = main_bar.addMenu('&File')
-        file_menu.addAction(exit_act)
-
-        edit_menu = main_bar.addMenu('&Edit')
-        view_menu = main_bar.addMenu('&View')
-        tools_menu = main_bar.addMenu('&Tools')
-        help_menu = main_bar.addMenu('&Help')
-
-        help_menu.addAction(credits_act)
-
-        layout.addWidget(main_bar)
+        self.addAction(exit_act)
 
         self.tabs = QTabWidget()
-        self.tab1 = ChordTab()
-        self.tab2 = QWidget()
+        self.tab1 = Composer(self)
+        self.tab2 = ChordTab()
         self.tab3 = StringTab()
 
         self.tabs.addTab(self.tab1, "Composer")
         self.tabs.addTab(self.tab2, "Tonal mapping")
         self.tabs.addTab(self.tab3, "String chord finder")
 
-        layout.addWidget(self.tabs)
-
-    @staticmethod
-    def credit_popup():
-        modal = CreditsModal()
-        modal.exec_()
+        self.setCentralWidget(self.tabs)
+        self.setContentsMargins(5, 5, 5, 5)
 
     @classmethod
     def run(cls):
