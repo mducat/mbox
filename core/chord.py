@@ -32,6 +32,52 @@ class Chord:
     def __getitem__(self, item):
         return self.notes[item]
 
+    def __setitem__(self, key, value):
+        self.notes[key] = value
+        self.update()
+
+    def __sub__(self, other):
+        if not isinstance(other, (Note, str)):
+            raise TypeError('cannot substract non-musical types to chord!')
+
+        if isinstance(other, str):
+            other = Note(other)
+
+        if other in self.notes:
+            self.notes.remove(other)
+        else:
+            print(f'tried to remove {other} from {self} where there is none.')
+
+        self.update()
+
+    def __add__(self, other):
+        if not isinstance(other, (Note, Chord, list, str)):
+            raise TypeError('cannot add non-musical types to chord!')
+
+        if isinstance(other, (Note, str)):
+            other = [other]
+        if isinstance(other, Chord):
+            other = other.notes
+        if isinstance(other, list):
+            other = [v if isinstance(v, Note) else Note(v) for v in other]
+
+        self.notes += other
+        self.notes = list(set(self.notes))
+
+        lower = min(self.notes, key=lambda x: x.position)
+        if lower.position < self.root_note.position:
+            self.root_note = lower
+
+        self.notes.sort(key=lambda x: x.position)
+
+        self.update()
+
+    def update(self):
+        self.find_name()
+
+        if self.root_note not in self.notes:
+            self.root_note = self.notes[0]
+
     def find_name(self):
         print(self.notes)
         inter = self.get_intervals()

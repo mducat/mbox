@@ -1,5 +1,14 @@
+from dataclasses import dataclass
 
-from core import Chord, Tunings
+from core import Chord, Tunings, Note
+
+
+@dataclass
+class StringPosition:
+    note: Note
+    position: int
+    string: int
+    tuning: Chord
 
 
 class StringChord(Chord):
@@ -26,6 +35,31 @@ class StringChord(Chord):
 
     def __str__(self):
         return 'StringChord ' + self.name
+
+    def __getitem__(self, item):
+        if not isinstance(item, int):
+            raise TypeError(f'Cannot find note from {type(item)}')
+
+        if item >= len(self.positions):
+            raise IndexError('list index out of range')
+
+        note_pos = self.positions[item]
+        note = self.tuning[item].clone().move(note_pos)
+
+        return StringPosition(note=note, position=note_pos, string=item, tuning=self.tuning)
+
+    def __setitem__(self, string, position):
+        prev = self.tuning[string].clone().move(self.positions[string])
+
+        if prev in self.notes:
+            self.notes.remove(prev)
+
+        if position > 0:
+            note = self.tuning[string].clone().move(position)
+            self.__add__(note)
+
+        self.positions[string] = position
+        self.update()
 
     def __hash__(self):
         notes_hash = Chord.__hash__(self)

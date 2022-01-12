@@ -1,4 +1,4 @@
-from PyQt5 import QtGui
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import QRectF, Qt, QPointF
 from PyQt5.QtGui import QPainter, QPen, QColor, QPainterPath
 from PyQt5.QtWidgets import QWidget, QGridLayout
@@ -7,6 +7,9 @@ from core import Chord, Tunings, StringChord, Scale
 
 
 class StringTab(QWidget):
+
+    CHORD_DISPLAY = 0
+    SCALE_DISPLAY = 1
 
     def __init__(self, tuning: Chord = Tunings.guitar_tuning, tabs_len=15):
         QWidget.__init__(self)
@@ -17,10 +20,39 @@ class StringTab(QWidget):
         self.tuning = tuning
         self.tabs_len = tabs_len
 
-        self.grid_offset_x = 20 + 40
+        positions = [-1, 3, 2, 3, 4, -1]
+        self.chord = StringChord(positions)
+        self.scale = Scale.minor('Fb')
+
+        self.mode = self.CHORD_DISPLAY
+
+        self.x_margin = 40
+
+        self.grid_offset_x = 20 + self.x_margin
         self.grid_offset_y = 70
         self.grid_height = 200
-        self.grid_width = 1000 - 40 * 2
+        self.grid_width = 1000 - self.x_margin * 2
+
+        self.step_y = (self.grid_height + self.grid_offset_y) / (len(self.tuning) - 1)
+        self.step_x = (self.grid_width + self.grid_offset_x) / self.tabs_len
+
+    def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
+        x_loc = a0.x() - self.grid_offset_x + self.step_x / 2
+        x_loc /= self.step_x
+
+        y_loc = self.grid_height - a0.y() + self.grid_offset_y + self.step_y
+        y_loc /= self.step_y
+
+        x_loc, y_loc = round(x_loc), round(y_loc)
+
+        if 0 <= y_loc < len(self.tuning) and 0 <= x_loc < self.tabs_len:
+
+            if self.chord[y_loc].position == x_loc:
+                self.chord[y_loc] = -1
+            else:
+                self.chord[y_loc] = x_loc
+
+            self.repaint()
 
     def paintEvent(self, a0: QtGui.QPaintEvent) -> None:
         qp = QPainter()
@@ -38,6 +70,9 @@ class StringTab(QWidget):
         grid_height = self.grid_height
         grid_width = self.grid_width
 
+        step_x = self.step_x
+        step_y = self.step_y
+
         font = qp.font()
         font.setPointSizeF(font.pointSize() * (self.grid_width / 500))
         qp.setFont(font)
@@ -46,8 +81,6 @@ class StringTab(QWidget):
                            grid_offset_x + grid_width, grid_offset_y + grid_height)
         qp.drawRect(main_grid)
 
-        step_y = (grid_height + grid_offset_y) / (len(self.tuning) - 1)
-        step_x = (grid_width + grid_offset_x) / self.tabs_len
         align = Qt.AlignCenter
 
         for i in range(len(self.tuning) - 1):
@@ -64,13 +97,10 @@ class StringTab(QWidget):
             qp.drawLine(QPointF(line_pos[0], line_pos[1]), QPointF(line_pos[2], line_pos[3]))
             qp.drawText(box, align, str(i + 1))
 
-        positions = [-1, 3, 2, 3, 4, -1]
-
-        st = StringChord(positions)
-        self.paintChord(st, qp)
-
-        """test = Scale.minor('Fb')
-        self.paintScale(test, qp)"""
+        if self.mode == self.CHORD_DISPLAY:
+            self.paintChord(self.chord, qp)
+        elif self.mode == self.SCALE_DISPLAY:
+            self.paintScale(self.scale, qp)
 
         qp.end()
 
@@ -89,14 +119,13 @@ class StringTab(QWidget):
 
     def paintChord(self, chord: StringChord, qp: QPainter):
         for i, n in enumerate(chord.positions):
-            self.paintNote(n, i, qp)
+            self.paintNote(n, i, qp, highlight=(chord[i].note == chord.root_note))
 
         grid_offset_x = self.grid_offset_x
         grid_offset_y = self.grid_offset_y
-        grid_height = self.grid_height
         grid_width = self.grid_width
 
-        step_y = (grid_height + grid_offset_y) / (len(self.tuning) - 1)
+        step_y = self.step_y
 
         font = qp.font()
         font.setPointSizeF(font.pointSize() * (self.grid_width / 500))
@@ -110,7 +139,7 @@ class StringTab(QWidget):
 
         qp.drawText(box, Qt.AlignCenter, chord.name)
 
-    def paintNote(self, x, y, qp: QPainter):
+    def paintNote(self, x, y, qp: QPainter, highlight=False):
         if y >= len(self.tuning) or x > self.tabs_len:
             raise ValueError(f'{x} {y}: Invalid coordinates !')
 
@@ -119,11 +148,9 @@ class StringTab(QWidget):
 
         grid_offset_x = self.grid_offset_x
         grid_offset_y = self.grid_offset_y
-        grid_height = self.grid_height
-        grid_width = self.grid_width
 
-        step_x = (grid_width + grid_offset_x) / self.tabs_len
-        step_y = (grid_height + grid_offset_y) / (len(self.tuning) - 1)
+        step_x = self.step_x
+        step_y = self.step_y
 
         size = step_x / 2
 
@@ -140,7 +167,7 @@ class StringTab(QWidget):
         path = QPainterPath()
         path.addRoundedRect(box, 5, 5)
 
-        qp.fillPath(path, QColor(0xB3, 0xE5, 0xFC))
+        qp.fillPath(path, QColor(0xB3, 0xE5, 0xFC) if not highlight else QColor(0xFF, 0x7F, 0x7F))
         qp.drawRoundedRect(box, 5, 5)
 
         qp.drawText(box, Qt.AlignCenter, note.name)
