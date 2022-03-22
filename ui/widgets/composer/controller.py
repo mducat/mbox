@@ -1,3 +1,4 @@
+import glob
 import os
 import tempfile
 from enum import Enum
@@ -61,7 +62,7 @@ class Staff:
         \\new Staff \\relative c {{
             \\clef {self.clef.name}
             \\time {self.time.numerator}/{self.time.denominator}
-            c4 d e f g a b cis
+            c'4 d e f g a b cis
         }}
         """
 
@@ -71,7 +72,7 @@ class Staff:
 class LilyController:
 
     def __init__(self):
-        self.staffs = [Staff(), Staff(), Staff()]
+        self.staffs = [Staff()]
 
     def export_midi(self):
         ...
@@ -99,9 +100,10 @@ class LilyController:
         file.write(bytes(content, encoding='utf-8'))
         file.flush()
 
-        # TODO: this is hella system specific
-        cmd = f"lilypond --png -s -dbackend=eps -dresolution=170 -o {file.name} {file.name}"
+        cmd = f'lilypond --png -s -dbackend=eps -dresolution=100 -o {file.name} {file.name}'
+        print('start')
         os.system(cmd)
+        print('done')
         res_file = file.name + '.png'
 
         if not os.path.exists(res_file):
@@ -109,6 +111,11 @@ class LilyController:
         else:
             res = cv2.imread(res_file)
 
-        os.system('rm /tmp/mbox-*')
+        file.close()
+
+        file_dir = os.path.dirname(file.name)
+        all_del = glob.glob(os.path.join(file_dir, 'mbox-*'))
+        for f in all_del:
+            os.remove(f)
 
         return res

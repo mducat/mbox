@@ -49,6 +49,7 @@ class Chord:
             print(f'tried to remove {other} from {self} where there is none.')
 
         self.update()
+        return self
 
     def __add__(self, other):
         if not isinstance(other, (Note, Chord, list, str)):
@@ -71,6 +72,7 @@ class Chord:
         self.notes.sort(key=lambda x: x.position)
 
         self.update()
+        return self
 
     def update(self):
         self.find_name()
@@ -79,12 +81,10 @@ class Chord:
             self.root_note = self.notes[0]
 
     def find_name(self):
-        print(self.notes)
         inter = self.get_intervals()
         names = ['P1', 'm2', 'M2', 'm3', 'M3', 'P4', 'd5', 'P5', 'm6', 'M6', 'm7', 'M7']
 
         res = {names[abs(v) % len(names)] for v in inter}
-        print(res)
 
         self.name = self.root_note.name
 

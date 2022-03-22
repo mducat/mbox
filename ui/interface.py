@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QApplication, QAction, qApp, QStyle, QTabWidget, QWidget, QMainWindow
 
-from ui.widgets import ChordTab, StringTab, Composer
+from ui.widgets import ChordTab, StringTab, Composer, PianoTab
 
+import abjad
 
 class MboxWindow(QMainWindow):
 
@@ -25,10 +26,12 @@ class MboxWindow(QMainWindow):
         self.tab1 = Composer(self)
         self.tab2 = ChordTab()
         self.tab3 = StringTab()
+        self.tab4 = PianoTab()
 
         self.tabs.addTab(self.tab1, "Composer")
         self.tabs.addTab(self.tab2, "Tonal mapping")
         self.tabs.addTab(self.tab3, "String chord finder")
+        self.tabs.addTab(self.tab4, "Piano chord finder")
 
         self.setCentralWidget(self.tabs)
         self.setContentsMargins(5, 5, 5, 5)
