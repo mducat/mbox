@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QMenuBar, QAction
+from PyQt5.QtWidgets import QWidget, QGridLayout, QMenuBar, QAction, QFileDialog
 
+from core import create_midi
 from ui.widgets.composer.display import LilyDisplay
 from ui.widgets.dialogs import CreditsModal
 
@@ -27,16 +28,29 @@ class Composer(QWidget):
         credits_act.setStatusTip('About MBox')
         credits_act.triggered.connect(self.credit_popup)
 
+        export_midi_act = QAction('&Export Midi File', self)
+        export_midi_act.setStatusTip('Export to .mid')
+        export_midi_act.triggered.connect(self.export_midi)
+
+        file_menu.addAction(export_midi_act)
+
         help_menu.addAction(credits_act)
 
         layout.setMenuBar(main_bar)
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        disp = LilyDisplay(self)
-        layout.addWidget(disp)
+        self.disp = LilyDisplay(self)
+        layout.addWidget(self.disp)
 
     @staticmethod
     def credit_popup():
         modal = CreditsModal()
         modal.exec_()
+
+    def export_midi(self):
+        file_options = QFileDialog.getSaveFileName(self, 'Export Midi file', '', 'Midi files (*.mid)')
+        file_path = file_options[0]
+
+        self.disp.builder.export_midi(file_path)
+

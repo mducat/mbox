@@ -8,6 +8,8 @@ from mido import MidiFile
 import cv2
 import numpy as np
 
+from core import create_midi, Chord, Note
+
 
 class Clef(Enum):
     treble = 0
@@ -55,16 +57,28 @@ class Staff:
         self.clef = clef
         self.time = time
 
-        self.notes = []  # TODO: define format
+        self.notes = [
+            (Chord(Note('C'), Note('E')), 4)
+        ]
 
     def build(self):
         content = f"""
-        \\new Staff \\relative c {{
-            \\clef {self.clef.name}
-            \\time {self.time.numerator}/{self.time.denominator}
-            c'4 d e f g a b cis
-        }}
-        """
+\\new Staff {{
+    \\clef {self.clef.name}
+    \\time {self.time.numerator}/{self.time.denominator}
+"""
+        for ch, ch_len in self.notes:
+            content += "    <"
+
+            for note in ch.notes:
+                content += f"{note.name.lower()}"
+                for _ in range(note.octave - 3):
+                    content += '\''
+                content += ' '
+
+            content += f">{ch_len}\n"
+
+        content += "}"
 
         return content
 
@@ -74,11 +88,13 @@ class LilyController:
     def __init__(self):
         self.staffs = [Staff()]
 
-    def export_midi(self):
-        ...
+    def export_midi(self, file_path):
+        out = create_midi(self.staffs[0].notes)
 
-    def import_midi(self):
-        file = MidiFile('test.mid', clip=True)
+        out.save(file_path)
+
+    def import_midi(self, file_path):
+        file = MidiFile(file_path, clip=True)
         # TODO: read clef, time, notes (+duration??)
         for track in file.tracks:
             print(track)
@@ -100,10 +116,8 @@ class LilyController:
         file.write(bytes(content, encoding='utf-8'))
         file.flush()
 
-        cmd = f'lilypond --png -s -dbackend=eps -dresolution=100 -o {file.name} {file.name}'
-        print('start')
+        cmd = f'lilypond --png -s -dbackend=eps -dresolution=170 -o {file.name} {file.name}'
         os.system(cmd)
-        print('done')
         res_file = file.name + '.png'
 
         if not os.path.exists(res_file):
