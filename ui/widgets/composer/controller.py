@@ -1,5 +1,6 @@
 import glob
 import os
+import pickle
 import tempfile
 from enum import Enum
 
@@ -58,7 +59,6 @@ class Staff:
         self.time = time
 
         self.notes = [
-            (Chord(Note('C'), Note('E')), 4)
         ]
 
     def build(self):
@@ -71,7 +71,7 @@ class Staff:
             content += "    <"
 
             for note in ch.notes:
-                content += f"{note.name.lower()}"
+                content += f"{note.name.replace('b', 'es').lower().replace('#', 'is')}"
                 for _ in range(note.octave - 3):
                     content += '\''
                 content += ' '
@@ -98,6 +98,14 @@ class LilyController:
         # TODO: read clef, time, notes (+duration??)
         for track in file.tracks:
             print(track)
+
+    def save_controller(self, file_path):
+        with open(file_path, 'wb') as f:
+            pickle.dump(self.staffs, f)
+
+    def restore_controller(self, file_path):
+        with open(file_path, 'rb') as f:
+            self.staffs = pickle.load(f)
 
     def build(self):
         content = """

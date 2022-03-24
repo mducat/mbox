@@ -2,8 +2,6 @@ from PyQt5.QtWidgets import QApplication, QAction, qApp, QStyle, QTabWidget, QWi
 
 from ui.widgets import ChordTab, StringTab, Composer, PianoTab
 
-import abjad
-
 class MboxWindow(QMainWindow):
 
     def __init__(self):

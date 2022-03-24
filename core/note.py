@@ -23,7 +23,7 @@ class Note:
         self.l_nam = ['La', 'Si', 'Do', 'Ré', 'Mi', 'Fa', 'Sol']
 
         for i, x in enumerate(self.l_nam):
-            if self.name.startswith(x):
+            if self.name.upper().startswith(x.upper()):
                 self.name = self.name[len(x):] + self.o_nam[i]
 
         convert = {
