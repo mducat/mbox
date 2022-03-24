@@ -1,0 +1,4 @@
+PyQt5~=5.15.6
+mido~=1.2.10
+numpy~=1.22.3
+opencv-python~=4.5.5.64
