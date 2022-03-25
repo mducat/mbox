@@ -186,16 +186,20 @@ class Chord:
         return hash(sum(hash(v) for v in self.notes))
 
 
-def create_midi(chords: [Chord]):
+def create_midi(chords):
     file = MidiFile()
+    file.type = 0
 
     # TODO: change midiutil->mido
 
     t = file.add_track('Main Track!')
 
-    for i, chord in enumerate(chords):
+    for chord, c_len in chords:
         for note in chord.notes:
-            t.append(Message('note_on', note=note.midi, time=i, velocity=100))
-            t.append(Message('note_off', note=note.midi, time=i+1, velocity=100))
+            t.append(Message('note_on', note=note.midi, time=0, velocity=100))
+
+        for i, note in enumerate(chord.notes):
+            time_set = 500 * (4 / c_len) if i == 0 else 1
+            t.append(Message('note_off', note=note.midi, time=int(time_set), velocity=100))
 
     return file

@@ -21,13 +21,13 @@ class MboxWindow(QMainWindow):
         self.addAction(exit_act)
 
         self.tabs = QTabWidget()
-        self.tab1 = Composer(self)
-        self.tab2 = ChordTab()
+        self.composer = Composer(self)
+        self.tonal_map = ChordTab()
         self.string_tab = StringTab()
         self.piano_tab = PianoTab()
 
-        self.tabs.addTab(self.tab1, "Composer")
-        self.tabs.addTab(self.tab2, "Tonal mapping")
+        self.tabs.addTab(self.composer, "Composer")
+        self.tabs.addTab(self.tonal_map, "Tonal mapping")
         self.tabs.addTab(self.string_tab, "String chord finder")
         self.tabs.addTab(self.piano_tab, "Piano chord finder")
 

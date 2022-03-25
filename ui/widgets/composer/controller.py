@@ -12,6 +12,7 @@ import cv2
 import numpy as np
 
 from core import create_midi, Chord, Note
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 
 
@@ -96,11 +97,11 @@ class LilyController:
         parse_index = lambda v: int(v[:v.index('.')])
 
         self.all_sounds = glob.glob('piano_c4/*.wav')
-        print(self.all_sounds)
         self.all_sounds = {parse_index(os.path.basename(v)): pygame.mixer.Sound(v) for v in self.all_sounds}
 
     def export_midi(self, file_path):
-        out = create_midi(self.staffs[0].notes)
+        chords = self.staffs[0].notes
+        out = create_midi(chords)
 
         out.save(file_path)
 
