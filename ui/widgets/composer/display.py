@@ -29,6 +29,7 @@ class LilyDisplay(QWidget):
         h, w, _ = img.shape
 
         self.image = QImage(img.data, w, h, 3 * w, QImage.Format_RGB888)
+        self.repaint()
 
     def paintEvent(self, a0: QtGui.QPaintEvent) -> None:
         qp = QPainter()

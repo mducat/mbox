@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QMenuBar, QAction, QFileDialog
 
 from core import create_midi
 from ui.widgets.composer.display import LilyDisplay
-from ui.widgets.dialogs import CreditsModal, ComposerAddChord, ComposerDelChord
+from ui.widgets.dialogs import CreditsModal, ComposerAddChord, ComposerDelChord, ComposerCpyChord
 
 
 class Composer(QWidget):
@@ -53,8 +53,20 @@ class Composer(QWidget):
         del_act.setStatusTip('Remove a note or a chord to the composer display')
         del_act.triggered.connect(self.del_chord)
 
+        str_act = QAction('&Add Chord From String Viewer', self)
+        str_act.setShortcut('Ctrl+Alt+A')
+        str_act.setStatusTip('Copy the chord from the string chord')
+        str_act.triggered.connect(self.copy_str_chord)
+
+        pia_act = QAction('&Add Chord From Piano Viewer', self)
+        pia_act.setShortcut('Ctrl+Alt+Z')
+        pia_act.setStatusTip('Copy the chord from the piano chord')
+        pia_act.triggered.connect(self.copy_pia_chord)
+
         tools_menu.addAction(add_act)
         tools_menu.addAction(del_act)
+        tools_menu.addAction(str_act)
+        tools_menu.addAction(pia_act)
 
     def setup_file_menu(self):
         file_menu = self.main_bar.addMenu('&File')
@@ -142,4 +154,35 @@ class Composer(QWidget):
             return
 
         staff.notes.pop(idx - 1)
+        self.disp.update()
+
+    def copy_str_chord(self):
+        staff = self.disp.builder.staffs[0]
+        x = self
+        for _ in range(3):
+            x = x.parent()
+
+        data = ComposerCpyChord.run(self, len(staff.notes), x.string_tab)
+
+        if data is None:
+            return
+
+        chord, idx, nlen = data
+
+        staff.notes.insert(idx, (chord, nlen))
+        self.disp.update()
+
+    def copy_pia_chord(self):
+        staff = self.disp.builder.staffs[0]
+        x = self
+        for _ in range(3):
+            x = x.parent()
+        data = ComposerCpyChord.run(self, len(staff.notes), x.piano_tab)
+
+        if data is None:
+            return
+
+        chord, idx, nlen = data
+
+        staff.notes.insert(idx, (chord, nlen))
         self.disp.update()
