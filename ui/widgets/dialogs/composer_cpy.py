@@ -81,7 +81,7 @@ class ComposerCpyChord(QDialog):
             return
 
         self.confirmed = True
-        self.data = (self.cpy_from.chord, idx_content, len_content)
+        self.data = (self.cpy_from.chord.clone(), idx_content, len_content)
 
         self.done(0)
 

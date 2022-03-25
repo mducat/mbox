@@ -24,6 +24,9 @@ class LilyDisplay(QWidget):
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
 
+    def play(self):
+        self.builder.play()
+
     def update(self):
         img = self.builder.build()
         h, w, _ = img.shape

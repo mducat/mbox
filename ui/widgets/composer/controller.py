@@ -2,6 +2,8 @@ import glob
 import os
 import pickle
 import tempfile
+import threading
+import time
 from enum import Enum
 
 from mido import MidiFile
@@ -10,6 +12,7 @@ import cv2
 import numpy as np
 
 from core import create_midi, Chord, Note
+import pygame
 
 
 class Clef(Enum):
@@ -88,6 +91,14 @@ class LilyController:
     def __init__(self):
         self.staffs = [Staff()]
 
+        pygame.mixer.init()
+
+        parse_index = lambda v: int(v[:v.index('.')])
+
+        self.all_sounds = glob.glob('piano_c4/*.wav')
+        print(self.all_sounds)
+        self.all_sounds = {parse_index(os.path.basename(v)): pygame.mixer.Sound(v) for v in self.all_sounds}
+
     def export_midi(self, file_path):
         out = create_midi(self.staffs[0].notes)
 
@@ -106,6 +117,34 @@ class LilyController:
     def restore_controller(self, file_path):
         with open(file_path, 'rb') as f:
             self.staffs = pickle.load(f)
+
+    def play(self):
+        notes = self.staffs[0].notes
+        self.play_notes(notes)
+
+    def play_notes(self, notes):
+        x = threading.Thread(target=self.play_blocking, args=(notes,))
+        x.start()
+
+    def play_blocking(self, notes):
+        base_len = 0.5  # this is the duration of a black note
+        base_note = Note('C')
+
+        for ch, c_len in notes:
+
+            for note in ch:
+                try:
+                    self.all_sounds[base_note.distance(note)].play(fade_ms=50)
+                except Exception as e:
+                    print(e)
+
+            time.sleep((4 * base_len) / c_len)
+
+            for note in ch:
+                try:
+                    self.all_sounds[base_note.distance(note)].stop()
+                except Exception as e:
+                    print(e)
 
     def build(self):
         content = """

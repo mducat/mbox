@@ -21,8 +21,8 @@ class Composer(QWidget):
         self.setup_file_menu()
 
         edit_menu = self.main_bar.addMenu('&Edit')
-        view_menu = self.main_bar.addMenu('&View')
 
+        self.setup_view_menu()
         self.setup_tools_menu()
 
         help_menu = self.main_bar.addMenu('&Help')
@@ -39,6 +39,16 @@ class Composer(QWidget):
 
         self.disp = LilyDisplay(self)
         layout.addWidget(self.disp)
+
+    def setup_view_menu(self):
+        view_menu = self.main_bar.addMenu('&View')
+
+        play_act = QAction('&Play', self)
+        play_act.setShortcut('Ctrl+P')
+        play_act.setStatusTip('Play current composed music')
+        play_act.triggered.connect(self.play_music)
+
+        view_menu.addAction(play_act)
 
     def setup_tools_menu(self):
         tools_menu = self.main_bar.addMenu('&Tools')
@@ -186,3 +196,6 @@ class Composer(QWidget):
 
         staff.notes.insert(idx, (chord, nlen))
         self.disp.update()
+
+    def play_music(self):
+        self.disp.play()

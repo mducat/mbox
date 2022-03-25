@@ -139,6 +139,9 @@ class Chord:
             inter.append(interval(self.root_note, i))
         return inter
 
+    def clone(self):
+        return Chord([v.clone() for v in self.notes])
+
     def analyse(self):
         inter = self.get_intervals()
 
