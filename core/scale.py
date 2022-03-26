@@ -35,7 +35,7 @@ class Scale:
         return self.scale[item].clone()
 
     def __eq__(self, other):
-        return self.scale == other.scale
+        return {v.name for v in self.scale} == {v.name for v in other.scale}
 
     def __contains__(self, item):
         return item.name in {v.name for v in self.scale}
