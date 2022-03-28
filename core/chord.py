@@ -160,11 +160,17 @@ class Chord:
         return 'unknown'
 
     @classmethod
-    def triad(cls, base: int, scale):
+    def triad(cls, base: int, scale, _type: str = None):
         s_len = len(scale)
 
+        n_len = 3
+        if _type == '7':
+            n_len = 4
+        elif _type == '9':
+            n_len = 5
+
         notes = []
-        for i in range(3):
+        for i in range(n_len):
             n = scale[(base + i * 2) % s_len]
             n = n.move(12 * ((base + i * 2) // s_len))
             notes.append(n)
