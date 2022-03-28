@@ -16,7 +16,7 @@ class ChordTab(QWidget):
 
         self.functions = [
             ['i', '', (580, 460), (1, 'min')],
-            ['I', '', (580, 400), (1, 'min')],
+            ['I', '', (580, 400), (1, 'maj')],
             ['bIII', '', (540, 510), (3, 'bmaj')],
             ['vi°7', '', (610, 510), (6, 'dim7')],
             ['vi', '', (690, 510), (6, 'min')],
@@ -40,6 +40,10 @@ class ChordTab(QWidget):
         self.base = None
         self.ext = None
 
+        self.note_box.move(10, 70)
+        self.ext_box.move(10, 10)
+
+        self.note_box.addItem('None')
         for i in range(12):
             self.note_box.addItem(Note('C').move(i).name)
         self.note_box.currentIndexChanged.connect(self.rename)
@@ -52,7 +56,17 @@ class ChordTab(QWidget):
         self.ext = to_map[idx]
 
     def rename(self, idx):
-        self.base = Note('C').move(idx)
+        if idx == 0:
+            self.base = None
+
+            for i, item in enumerate(self.functions):
+                self.functions[i][1] = item[0]
+
+            self.repaint()
+            return
+
+        self.base = Note('C').move(idx - 1)
+
         sc_maj = Scale.major(self.base)
         sc_min = Scale.minor(self.base)
 
@@ -74,6 +88,7 @@ class ChordTab(QWidget):
                 r_name += '7'
 
             self.functions[i][1] = r_name
+        self.repaint()
 
     def mousePressEvent(self, a0: QtGui.QMouseEvent) -> None:
         x, y = a0.x(), a0.y()
@@ -101,6 +116,7 @@ class ChordTab(QWidget):
         if 'maj' in args[1]:
             sc = sc_maj
         else:
+            print('sc_min')
             sc = sc_min
 
         r_pos = args[0] - 1
@@ -111,7 +127,8 @@ class ChordTab(QWidget):
         chord_ = Chord.triad(r_pos, sc, self.ext)
 
         x.composer.disp.builder.play_notes([(chord_, 4)])
-        x.composer.disp.builder.staffs[0].append((chord_, 4))
+        x.composer.disp.builder.staffs[0].notes.append((chord_, 4))
+        x.composer.disp.update()
 
     def paintEvent(self, a0: QtGui.QPaintEvent) -> None:
         qp = QPainter()
